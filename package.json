@@ -1,0 +1,11 @@
+{
+  "name": "abakar-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix mlms/frontend\" \"npm run dev --prefix mlms/backend\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.0"
+  }
+}
