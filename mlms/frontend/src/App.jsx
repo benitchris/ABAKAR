@@ -19,8 +19,8 @@ const ProtectedRoute = ({ children }) => {
         { path: '/', label: 'Dashboard', icon: <LayoutDashboard size={20} />, roles: ['Admin', 'Doctor', 'Receptionist', 'Technician', 'Supervisor'] },
         { path: '/patients', label: 'Patients', icon: <Users size={20} />, roles: ['Admin', 'Doctor', 'Receptionist'] },
         { path: '/tests', label: 'Requests Queue', icon: <Activity size={20} />, roles: ['Admin', 'Doctor', 'Receptionist', 'Technician', 'Supervisor'] },
-        { path: '/reports', label: 'Reports', icon: <FileText size={20} />, roles: ['Admin', 'Doctor', 'Supervisor'] },
-        { path: '/billing', label: 'Billing', icon: <DollarSign size={20} />, roles: ['Admin', 'Receptionist'] }
+        { path: '/reports', label: 'Reports', icon: <FileText size={20} />, roles: ['Admin', 'Doctor', 'Supervisor', 'Technician', 'Receptionist'] },
+        { path: '/billing', label: 'Billing', icon: <DollarSign size={20} />, roles: ['Admin', 'Receptionist', 'Supervisor'] }
     ];
     navItems = navItems.filter(item => item.roles.includes(user.role));
 

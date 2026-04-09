@@ -19,9 +19,9 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
     }, []);
 
-    const login = async (userId) => {
+    const login = async (username, password) => {
         try {
-            const res = await axios.post('http://localhost:3001/api/auth/login', { user_id: userId });
+            const res = await axios.post('http://localhost:3001/api/auth/login', { username, password });
             const { token, user } = res.data;
             localStorage.setItem('mlms_token', token);
             localStorage.setItem('mlms_user', JSON.stringify(user));

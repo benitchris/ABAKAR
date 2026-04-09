@@ -9,8 +9,10 @@ export default function Reports() {
     const [search, setSearch] = useState('');
 
     useEffect(() => {
-        axios.get('http://localhost:3001/api/requests?status=Approved')
-            .then(res => setRequests(res.data))
+        axios.get('http://localhost:3001/api/requests')
+            .then(res => {
+                setRequests(res.data);
+            })
             .catch(console.error);
     }, []);
 
@@ -38,19 +40,32 @@ export default function Reports() {
             doc.text(`Report ID: REQ-${id.toString().padStart(4, '0')}`, 130, 45);
             doc.text(`Date: ${new Date(data.request.created_at).toLocaleDateString()}`, 130, 52);
 
-            const tableData = data.results.map(r => [
-                r.name,
-                `${r.result_value} ${r.unit}`,
-                `${r.normal_min} - ${r.normal_max} ${r.unit}`,
-                r.is_abnormal ? 'Abnormal' : 'Normal'
-            ]);
+            const tableData = data.results.map(r => {
+                const testDisplay = r.parameter_name === 'Unmapped Parameter' ? r.test_name : r.parameter_name;
+                const refRange = r.normal_min === 0 && r.normal_max === 0 
+                    ? '—' 
+                    : `${r.normal_min} - ${r.normal_max} ${r.unit}`;
+                
+                return [
+                    testDisplay,
+                    `${r.result_value} ${r.unit}`,
+                    refRange,
+                    r.is_abnormal ? 'ABNORMAL' : 'Normal'
+                ];
+            });
 
             autoTable(doc, {
                 startY: 70,
-                head: [['Test Name', 'Result', 'Ref Range', 'Flag']],
+                head: [['Test / Parameter', 'Result', 'Ref Range', 'Flag']],
                 body: tableData,
                 theme: 'grid',
-                headStyles: { fillColor: [30, 58, 138] }
+                headStyles: { fillColor: [30, 58, 138] },
+                columnStyles: {
+                    0: { cellWidth: 70 },
+                    1: { cellWidth: 30 },
+                    2: { cellWidth: 40 },
+                    3: { cellWidth: 30 }
+                }
             });
 
             if (data.validation) {
@@ -90,7 +105,7 @@ export default function Reports() {
                             <th style={{ padding: '12px' }}>Request ID</th>
                             <th style={{ padding: '12px' }}>Patient</th>
                             <th style={{ padding: '12px' }}>Doctor</th>
-                            <th style={{ padding: '12px' }}>Completion Date</th>
+                            <th style={{ padding: '12px' }}>Status</th>
                             <th style={{ padding: '12px' }}>Actions</th>
                         </tr>
                     </thead>
@@ -100,17 +115,30 @@ export default function Reports() {
                                 <td style={{ padding: '12px', fontWeight: 500 }}>REQ-{req.id.toString().padStart(4, '0')}</td>
                                 <td style={{ padding: '12px' }}>{req.first_name} {req.last_name}</td>
                                 <td style={{ padding: '12px' }}>{req.doctor_name}</td>
-                                <td style={{ padding: '12px' }}>{new Date(req.created_at).toLocaleDateString()}</td>
                                 <td style={{ padding: '12px' }}>
-                                    <button className="btn btn-secondary" onClick={() => generatePDF(req.id)} style={{ padding: '6px 12px', fontSize: '0.75rem' }}>
-                                        <Download size={14} /> Download PDF
+                                    <span className={`badge badge-${req.status.toLowerCase()}`} style={{ fontSize: '0.75rem' }}>
+                                        {req.status}
+                                    </span>
+                                </td>
+                                <td style={{ padding: '12px' }}>
+                                    <button 
+                                        className="btn btn-secondary" 
+                                        onClick={() => req.status === 'Approved' && generatePDF(req.id)} 
+                                        style={{ 
+                                            padding: '6px 12px', fontSize: '0.75rem', 
+                                            opacity: req.status === 'Approved' ? 1 : 0.5,
+                                            cursor: req.status === 'Approved' ? 'pointer' : 'not-allowed'
+                                        }}
+                                        disabled={req.status !== 'Approved'}
+                                    >
+                                        <Download size={14} /> {req.status === 'Approved' ? 'Download PDF' : 'Processing...'}
                                     </button>
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
-                {filteredRequests.length === 0 && <p style={{ padding: '24px', textAlign: 'center' }}>No approved reports found.</p>}
+                {filteredRequests.length === 0 && <p style={{ padding: '24px', textAlign: 'center' }}>No reports found in this section.</p>}
             </div>
         </div>
     );

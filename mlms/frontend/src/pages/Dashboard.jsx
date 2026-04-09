@@ -5,7 +5,7 @@ import { Activity, Users, FileText, AlertCircle } from 'lucide-react';
 
 export default function Dashboard() {
     const { user } = useAuth();
-    const [stats, setStats] = useState({ totalCases: 0, pending: 0, completed: 0, urgent: 0 });
+    const [stats, setStats] = useState({ totalCases: 0, pending: 0, tested: 0, urgent: 0 });
     const [recentRequests, setRecentRequests] = useState([]);
 
     useEffect(() => {
@@ -36,7 +36,7 @@ export default function Dashboard() {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px', marginBottom: '32px' }}>
                     <StatCard title="Total Cases" value={stats.totalCases} icon={<Activity />} color="var(--primary)" />
                     <StatCard title="Pending" value={stats.pending} icon={<FileText />} color="var(--warning)" />
-                    <StatCard title="Completed" value={stats.completed} icon={<Users />} color="var(--success)" />
+                    <StatCard title="Tested" value={stats.tested} icon={<Users />} color="var(--primary)" />
                     <StatCard title="Urgent" value={stats.urgent} icon={<AlertCircle />} color="var(--danger)" />
                 </div>
             )}
@@ -47,24 +47,25 @@ export default function Dashboard() {
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                         <thead>
                             <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                                <th style={{ padding: '12px' }}>Patient</th>
-                                <th style={{ padding: '12px' }}>Doctor</th>
-                                <th style={{ padding: '12px' }}>Priority</th>
-                                <th style={{ padding: '12px' }}>Status</th>
-                                <th style={{ padding: '12px' }}>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {recentRequests.map(req => (
-                                <tr key={req.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                                    <td style={{ padding: '12px' }}>{req.first_name} {req.last_name}</td>
-                                    <td style={{ padding: '12px' }}>{req.doctor_name}</td>
-                                    <td style={{ padding: '12px' }}>
-                                        <span className={`badge ${req.priority === 'Urgent' ? 'badge-urgent' : ''}`} style={{ background: req.priority === 'Normal' ? 'var(--primary-light)' : undefined, color: req.priority === 'Normal' ? 'var(--primary)' : undefined }}>
-                                            {req.priority}
-                                        </span>
-                                    </td>
-                                    <td style={{ padding: '12px' }}>
+                                    <th style={{ padding: '12px' }}>Patient</th>
+                                    <th style={{ padding: '12px' }}>Doctor</th>
+                                    <th style={{ padding: '12px' }}>Billing</th>
+                                    <th style={{ padding: '12px' }}>Priority</th>
+                                    <th style={{ padding: '12px' }}>Status</th>
+                                    <th style={{ padding: '12px' }}>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {recentRequests.map(req => (
+                                    <tr key={req.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                                        <td style={{ padding: '12px' }}>{req.first_name} {req.last_name}</td>
+                                        <td style={{ padding: '12px' }}>{req.doctor_name}</td>
+                                        <td style={{ padding: '12px' }}>
+                                            <span className={`badge`} style={{ background: req.billing_status === 'Paid' ? 'var(--success-light)' : 'var(--danger-light)', color: req.billing_status === 'Paid' ? 'var(--success)' : 'var(--danger)', fontSize: '0.7rem' }}>
+                                                {req.billing_status || 'Unset'}
+                                            </span>
+                                        </td>
+                                        <td style={{ padding: '12px' }}>
                                         <span className={`badge badge-${req.status.toLowerCase()}`}>
                                             {req.status}
                                         </span>

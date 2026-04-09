@@ -4,3 +4,7 @@ node_modules/
 dist/
 build/
 *.log
+mlms/backend/dist-desktop/
+mlms/backend/sql-wasm.wasm
+mlms/backend/mlms.sqlite
+mlms/backend/public/
